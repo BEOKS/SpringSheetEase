@@ -38,22 +38,18 @@ public class ExcelDownloadAspect {
 
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
-
-        // @ExcelDownload 어노테이션에서 파일 이름 가져오기
         ExcelDownload excelDownload = method.getAnnotation(ExcelDownload.class);
         String fileName = excelDownload.fileName();
 
-        // 메소드 실행 후 로직 (엑셀 파일 생성 및 응답 반환)
         XSSFExcelFileConverterBuilder builder = new XSSFExcelFileConverterBuilder();
         try (XSSFWorkbook workbook = builder.fileName(fileName).data(result).build()) {
+            response.setHeader("Content-Disposition","attachment; filename="+fileName);
             response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             workbook.write(response.getOutputStream());
             response.flushBuffer();
         } catch (Exception e) {
-            // 오류 처리
+            throw new RuntimeException("error occurred when convert data to excel file",e);
         }
-
-        // 메소드 실행 결과 반환
         return result;
     }
 }
