@@ -14,3 +14,4 @@ public class PetController {
     }
 }
 ```
+You can see the result in [resource](./src/test/resources) directory
