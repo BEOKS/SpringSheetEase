@@ -8,9 +8,18 @@ You need only append `@ExcelDownload` annotation to Controller Method.
 @RestController
 @RequestMapping("/pet")
 public class PetController {
-    @GetMapping("/excel/aop")
+    
+    //this will response JSON
+    @GetMapping
     @ExcelDownload(fileName = "test.xlsx")
-    List<Pet> getExcelAop(HttpServletResponse response){
+    List<Pet> getExcelAop(){
+        return Pet.getDummy();
+    }
+    
+    //this will response test.xlsx file
+    @GetMapping("/excel")
+    @ExcelDownload(fileName = "test.xlsx")
+    List<Pet> getExcelAop(){
         return Pet.getDummy();
     }
 }
