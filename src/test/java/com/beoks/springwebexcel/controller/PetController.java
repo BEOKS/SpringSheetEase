@@ -36,7 +36,7 @@ public class PetController {
 
     @GetMapping("/excel/aop")
     @ResponseBody
-    @ExcelDownload(fileName = "test.xlsx")
+    @ExcelDownload(fileName = "pet.xlsx")
     List<Pet> getExcelAop(HttpServletResponse response){
         return Pet.getDummy();
     }

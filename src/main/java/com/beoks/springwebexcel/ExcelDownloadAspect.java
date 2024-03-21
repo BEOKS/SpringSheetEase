@@ -40,9 +40,10 @@ public class ExcelDownloadAspect {
         Method method = signature.getMethod();
         ExcelDownload excelDownload = method.getAnnotation(ExcelDownload.class);
         String fileName = excelDownload.fileName();
+        boolean useFlatten = excelDownload.useFlatten();
 
         XSSFExcelFileConverterBuilder builder = new XSSFExcelFileConverterBuilder();
-        try (XSSFWorkbook workbook = builder.fileName(fileName).data(result).build()) {
+        try (XSSFWorkbook workbook = builder.fileName(fileName).data(result).useFlatten(useFlatten).build()) {
             response.setHeader("Content-Disposition","attachment; filename="+fileName);
             response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             workbook.write(response.getOutputStream());

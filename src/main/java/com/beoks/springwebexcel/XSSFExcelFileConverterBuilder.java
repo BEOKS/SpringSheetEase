@@ -1,5 +1,6 @@
 package com.beoks.springwebexcel;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -8,10 +9,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.text.DateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.apache.tomcat.websocket.Util.isPrimitive;
 
@@ -67,7 +66,17 @@ public class XSSFExcelFileConverterBuilder implements ExcelFileConverterBuilder<
             if(!isObjectPrimitive){
                 try {
                     int colNum=0;
-                    for (String value : JsonFlatter.flattenJson(object).values()) {
+                    Collection<String> values;
+                    if(this.useFlatten){
+                        values=JsonFlatter.flattenJson(object).values();
+                    }
+                    else{
+                        Map<String, String> map = new ObjectMapper().convertValue(object, Map.class);
+                        values=map.values().stream()
+                                .map(Object::toString)
+                                .collect(Collectors.toList());
+                    }
+                    for (String value : values) {
                         row.createCell(colNum++).setCellValue(value);
                     }
                 } catch (Exception e) {
