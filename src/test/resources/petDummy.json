@@ -1,1 +1,54 @@
-[{"name":"Max","birthDate":"2018-01-01","type":"DOG","owner":{"name":"John","address":"123 Street","friends":[{"name":"Sarah","address":"456 Avenue","friends":null},{"name":"Robert","address":"789 Road","friends":null}]}},{"name":"Bella","birthDate":"2019-01-01","type":"CAT","owner":{"name":"John","address":"123 Street","friends":[{"name":"Sarah","address":"456 Avenue","friends":null},{"name":"Robert","address":"789 Road","friends":null}]}},{"name":"Charlie","birthDate":"2017-01-01","type":"DOG","owner":{"name":"Sarah","address":"456 Avenue","friends":null}}]
+[
+  {
+    "name": "Max",
+    "birthDate": "2018-01-01",
+    "type": "DOG",
+    "owner": {
+      "name": "John",
+      "address": "123 Street",
+      "friends": [
+        {
+          "name": "Sarah",
+          "address": "456 Avenue",
+          "friends": null
+        },
+        {
+          "name": "Robert",
+          "address": "789 Road",
+          "friends": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "Bella",
+    "birthDate": "2019-01-01",
+    "type": "CAT",
+    "owner": {
+      "name": "John",
+      "address": "123 Street",
+      "friends": [
+        {
+          "name": "Sarah",
+          "address": "456 Avenue",
+          "friends": null
+        },
+        {
+          "name": "Robert",
+          "address": "789 Road",
+          "friends": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "Charlie",
+    "birthDate": "2017-01-01",
+    "type": "DOG",
+    "owner": {
+      "name": "Sarah",
+      "address": "456 Avenue",
+      "friends": null
+    }
+  }
+]
