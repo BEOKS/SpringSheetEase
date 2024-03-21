@@ -12,14 +12,14 @@ public class PetController {
     //this will response JSON
     @GetMapping
     @ExcelDownload(fileName = "test.xlsx")
-    List<Pet> getExcelAop(){
+    List<Pet> get(){
         return Pet.getDummy();
     }
     
     //this will response test.xlsx file
     @GetMapping("/excel")
     @ExcelDownload(fileName = "test.xlsx")
-    List<Pet> getExcelAop(){
+    List<Pet> getExcel(){
         return Pet.getDummy();
     }
 }
