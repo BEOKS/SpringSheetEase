@@ -11,7 +11,6 @@ public class PetController {
     
     //this will response JSON
     @GetMapping
-    @ExcelDownload(fileName = "test.xlsx")
     List<Pet> get(){
         return Pet.getDummy();
     }
