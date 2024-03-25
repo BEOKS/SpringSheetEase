@@ -1,6 +1,7 @@
 package com.beoks.springwebexcel;
 
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.poifs.crypt.EncryptionInfo;
 import org.apache.poi.poifs.crypt.EncryptionMode;
@@ -15,8 +16,10 @@ import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
+import java.security.GeneralSecurityException;
 import java.util.List;
 
 @Aspect
@@ -25,8 +28,7 @@ public class ExcelDownloadAspect {
 
     @Around("@annotation(ExcelDownload)")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
-        // 메소드 실행 전 로직
-        // 예를 들어, HttpServletResponse 객체를 찾기
+
         HttpServletResponse response = null;
         for (Object arg : joinPoint.getArgs()) {
             if (arg instanceof HttpServletResponse) {
@@ -39,7 +41,6 @@ public class ExcelDownloadAspect {
             throw new IllegalArgumentException("HttpServletResponse 파라미터가 필요합니다.");
         }
 
-        // 실제 메소드 실행
         List<?> result = (List<?>) joinPoint.proceed();
         System.out.println("ExcelDownloadAspect exec");
         System.out.println("result = " + result);
@@ -56,21 +57,7 @@ public class ExcelDownloadAspect {
             response.setHeader("Content-Disposition","attachment; filename="+fileName);
             response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             if(!password.isEmpty()){
-                try (POIFSFileSystem fs = new POIFSFileSystem()) {
-                    EncryptionInfo info = new EncryptionInfo(EncryptionMode.agile);
-                    // EncryptionInfo info = new EncryptionInfo(EncryptionMode.agile, CipherAlgorithm.aes192, HashAlgorithm.sha384, -1, -1, null);
-                    Encryptor enc = info.getEncryptor();
-                    enc.confirmPassword(password);
-                    // Read in an existing OOXML file and write to encrypted output stream
-                    // don't forget to close the output stream otherwise the padding bytes aren't added
-                    ByteArrayOutputStream fileOut = new ByteArrayOutputStream();
-                    workbook.write(fileOut);
-                    try (OPCPackage opc = OPCPackage.open(new ByteArrayInputStream(fileOut.toByteArray()));
-                         OutputStream os = enc.getDataStream(fs)) {
-                        opc.save(os);
-                    }
-                    fs.writeFilesystem(response.getOutputStream());
-                }
+                responseEncryptedWorkBook(password, workbook, response);
             }
             else{
                 workbook.write(response.getOutputStream());
@@ -80,5 +67,25 @@ public class ExcelDownloadAspect {
             throw new RuntimeException("error occurred when convert data to excel file",e);
         }
         return result;
+    }
+
+    private static void responseEncryptedWorkBook(String password, XSSFWorkbook workbook, HttpServletResponse response) throws IOException {
+        try (POIFSFileSystem fs = new POIFSFileSystem()) {
+            EncryptionInfo info = new EncryptionInfo(EncryptionMode.agile);
+            // EncryptionInfo info = new EncryptionInfo(EncryptionMode.agile, CipherAlgorithm.aes192, HashAlgorithm.sha384, -1, -1, null);
+            Encryptor enc = info.getEncryptor();
+            enc.confirmPassword(password);
+            // Read in an existing OOXML file and write to encrypted output stream
+            // don't forget to close the output stream otherwise the padding bytes aren't added
+            ByteArrayOutputStream fileOut = new ByteArrayOutputStream();
+            workbook.write(fileOut);
+            try (OPCPackage opc = OPCPackage.open(new ByteArrayInputStream(fileOut.toByteArray()));
+                 OutputStream os = enc.getDataStream(fs)) {
+                opc.save(os);
+            } catch (GeneralSecurityException | InvalidFormatException e) {
+                throw new RuntimeException(e);
+            }
+            fs.writeFilesystem(response.getOutputStream());
+        }
     }
 }
