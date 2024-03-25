@@ -47,4 +47,11 @@ public class PetController {
     List<Pet> getFlattenExcelAop(HttpServletResponse response){
         return Pet.getDummy();
     }
+
+    @GetMapping("/excel/aop/password")
+    @ResponseBody
+    @ExcelDownload(fileName = "pet.xlsx",useFlatten = false,password = "1234")
+    List<Pet> getPasswordExcelAop(HttpServletResponse response){
+        return Pet.getDummy();
+    }
 }

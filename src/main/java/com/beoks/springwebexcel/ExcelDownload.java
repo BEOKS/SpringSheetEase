@@ -11,4 +11,6 @@ public @interface ExcelDownload {
     String fileName();
 
     boolean useFlatten() default true;
+
+    String password() default "";
 }
