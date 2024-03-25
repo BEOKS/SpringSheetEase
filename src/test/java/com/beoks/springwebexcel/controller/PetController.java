@@ -40,4 +40,11 @@ public class PetController {
     List<Pet> getExcelAop(HttpServletResponse response){
         return Pet.getDummy();
     }
+
+    @GetMapping("/excel/aop/noFlatten")
+    @ResponseBody
+    @ExcelDownload(fileName = "pet.xlsx",useFlatten = false)
+    List<Pet> getFlattenExcelAop(HttpServletResponse response){
+        return Pet.getDummy();
+    }
 }

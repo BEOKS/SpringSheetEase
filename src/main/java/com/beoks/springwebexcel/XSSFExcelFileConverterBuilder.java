@@ -1,5 +1,6 @@
 package com.beoks.springwebexcel;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -71,10 +72,16 @@ public class XSSFExcelFileConverterBuilder implements ExcelFileConverterBuilder<
                         values=JsonFlatter.flattenJson(object).values();
                     }
                     else{
-                        Map<String, String> map = new ObjectMapper().convertValue(object, Map.class);
-                        values=map.values().stream()
-                                .map(Object::toString)
-                                .collect(Collectors.toList());
+                        ObjectMapper objectMapper = new ObjectMapper();
+                        Map<String, Object> map = objectMapper.convertValue(object, Map.class);
+                        values = map.values().stream()
+                                .map(value -> {
+                                    try {
+                                        return objectMapper.writeValueAsString(value);
+                                    } catch (JsonProcessingException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                }).toList();
                     }
                     for (String value : values) {
                         row.createCell(colNum++).setCellValue(value);
